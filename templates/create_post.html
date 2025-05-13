@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Post{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1 class="mb-4">Create New Post</h1>
+        
+        <form method="POST" action="{{ url_for('create') }}">
+            <!-- Поле для имени автора -->
+            <div class="mb-3">
+                <label for="author_name" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="author_name" name="author_name" 
+                       value="{{ request.form.author_name }}" placeholder="Anonymous">
+                <div class="form-text">Optional field</div>
+            </div>
+            
+            <!-- Поле для заголовка -->
+            <div class="mb-3">
+                <label for="title" class="form-label">Post Title*</label>
+                <input type="text" class="form-control" id="title" name="title" 
+                       value="{{ request.form.title }}" required>
+                {% if 'title' in request.form and not request.form.title %}
+                    <div class="invalid-feedback d-block">Title is required</div>
+                {% endif %}
+            </div>
+            
+            <!-- Поле для содержимого -->
+            <div class="mb-3">
+                <label for="content" class="form-label">Post Content*</label>
+                <textarea class="form-control" id="content" name="content" 
+                          rows="10" required>{{ request.form.content }}</textarea>
+            </div>
+            
+            <!-- Кнопки отправки/отмены -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Create Post</button>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

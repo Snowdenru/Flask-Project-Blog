@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <article class="mb-5">
+        <h1>{{ post.title }}</h1>
+        <p class="text-muted">
+            By {{ post.author_name }} on {{ post.created_at}}
+        </p>
+        <p>{{ post.content }}</p>
+        
+        <div class="mb-3">
+            <a href="{{ url_for('edit', post_id=post.id) }}" class="btn btn-secondary">Edit Post</a>
+            <form action="{{ url_for('delete', post_id=post.id) }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete Post</button>
+            </form>
+        </div>
+    </article>
+
+    <section class="comments mb-5">
+        <h2>Comments</h2>
+        
+        {% for comment in comments %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ comment.author_name }}</h5>
+                    <p class="card-text">{{ comment.content }}</p>
+                    <p class="text-muted small">{{ comment.created_at}}</p>
+                    
+                    <!-- Форма для ответа на комментарий -->
+                    <button class="btn btn-sm btn-outline-secondary reply-btn" data-comment-id="{{ comment.id }}">
+                        Reply
+                    </button>
+                    
+                    <div class="reply-form mt-3" id="reply-form-{{ comment.id }}" style="display: none;">
+                        <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}">
+                            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                            <div class="mb-3">
+                                <input type="text" name="author_name" class="form-control" placeholder="Your name" value="Anonymous">
+                            </div>
+                            <div class="mb-3">
+                                <textarea name="content" class="form-control" placeholder="Your reply" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Submit Reply</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </section>
+
+    <section class="add-comment">
+        <h3>Add a Comment</h3>
+        <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}">
+            <div class="mb-3">
+                <input type="text" name="author_name" class="form-control" placeholder="Your name" value="Anonymous">
+            </div>
+            <div class="mb-3">
+                <textarea name="content" class="form-control" placeholder="Your comment" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Comment</button>
+        </form>
+    </section>
+
+    <script>
+        // Показать/скрыть форму ответа
+        document.querySelectorAll('.reply-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const formId = button.getAttribute('data-comment-id');
+                const form = document.getElementById(`reply-form-${formId}`);
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+    </script>
+{% endblock %}
